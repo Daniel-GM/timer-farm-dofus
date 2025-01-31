@@ -13,6 +13,12 @@ function App() {
             <TimerView />
             <TimerView />
             <TimerView />
+            <TimerView />
+            <TimerView />
+            <TimerView />
+            <TimerView />
+            <TimerView />
+            <TimerView />
           </div>
         </div>
       </div>
