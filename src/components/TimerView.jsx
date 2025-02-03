@@ -58,7 +58,7 @@ const TimerView = () => {
                   }
                 }}
               >
-                {value}
+                {value} 
               </label>
               {index < values.length - 1 && <label> , </label>}
             </span>
