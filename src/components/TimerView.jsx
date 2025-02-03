@@ -5,7 +5,15 @@ const TimerView = () => {
   const [time, setTime] = useState(INITIAL_TIME)
   const [isRunning, setIsRunning] = useState(false)
   const [color, setColor] = useState('border-gray-500')
+  const [values, setValues] = useState([-20, 20])
 
+  const handleValueChange = (index, newValue) => {
+    setValues(prevValues => {
+      const newValues = [...prevValues]
+      newValues[index] = newValue
+      return newValues
+    })
+  }
 
   useEffect(() => {
     if (!isRunning) return setColor('border-gray-500')
@@ -38,23 +46,37 @@ const TimerView = () => {
     <div>
       <div className="text-center mb-3 relative">
         <div className='relative'>
-          <label>-20</label>
-          <label>, </label>
-          <label>20</label>
+          {values.map((value, index) => (
+            <span key={index}>
+              <label
+                onClick={() => {
+                  const newValue = prompt('Digite um novo valor:', value)
+                  if (newValue !== null && !isNaN(parseFloat(newValue))) {
+                    handleValueChange(index, parseFloat(newValue))
+                  } else {
+                    alert('Valor inválido')
+                  }
+                }}
+              >
+                {value}
+              </label>
+              {index < values.length - 1 && <label>, </label>}
+            </span>
+          ))}
         </div>
         <section
           className="absolute top-6 left-1 flex space-x-0.5"
         >
-          <img 
-            src='reset.svg' 
-            alt='reset' 
-            className='w-7 h-7 bg-gray-300 hover:bg-red-400  border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer' 
+          <img
+            src='reset.svg'
+            alt='reset'
+            className='w-7 h-7 bg-gray-300 hover:bg-red-400  border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer'
             onClick={() => setTime(INITIAL_TIME)}
           />
-          <img 
-            src='pos.svg' 
-            alt='position' 
-            className='w-7 h-7 bg-gray-300 hover:bg-cyan-400 border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer' 
+          <img
+            src='pos.svg'
+            alt='position'
+            className='w-7 h-7 bg-gray-300 hover:bg-cyan-400 border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer'
           />
         </section>
       </div>
