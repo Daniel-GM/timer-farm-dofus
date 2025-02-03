@@ -5,7 +5,7 @@ const TimerView = () => {
   const [time, setTime] = useState(INITIAL_TIME)
   const [isRunning, setIsRunning] = useState(false)
   const [color, setColor] = useState('border-gray-500')
-  const [values, setValues] = useState([-20, 20])
+  const [values, setValues] = useState([0, 0])
 
   const handleValueChange = (index, newValue) => {
     setValues(prevValues => {
@@ -60,7 +60,7 @@ const TimerView = () => {
               >
                 {value}
               </label>
-              {index < values.length - 1 && <label>, </label>}
+              {index < values.length - 1 && <label> , </label>}
             </span>
           ))}
         </div>
