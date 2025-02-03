@@ -4,22 +4,22 @@ const TimerView = () => {
   const INITIAL_TIME = 6003
   const [time, setTime] = useState(INITIAL_TIME)
   const [isRunning, setIsRunning] = useState(false)
-  const [color, setColor] = useState('border-gray-500')  
+  const [color, setColor] = useState('border-gray-500')
 
 
   useEffect(() => {
     if (!isRunning) return setColor('border-gray-500')
     const interval = setInterval(() => {
       setTime((prevTime) => {
-        (prevTime <= 1000) ? setColor('border-red-500') : setColor('border-green-500')
-        
+        (prevTime <= 800) ? setColor('border-red-500') : setColor('border-green-500')
+
         if (prevTime <= 0) {
           setTime(INITIAL_TIME)
         }
         return prevTime - 1
       })
     }, 10)
-    return () => clearInterval(interval)  
+    return () => clearInterval(interval)
   }, [isRunning])
 
   function switchTimer() {
@@ -35,14 +35,38 @@ const TimerView = () => {
   }
 
   return (
-    <div 
-      className={`bg-gray-700 p-4 rounded-lg shadow border-2 ${color} cursor-pointer`}
-      onClick={() => switchTimer()}  
-    >
-      <div className="flex items-center justify-center">
-        <div 
-          className="text-4xl font-semibold w-[7ch]" >
-          {timer()}
+    <div>
+      <div className="text-center mb-3 relative">
+        <div className='relative'>
+          <label>-20</label>
+          <label>, </label>
+          <label>20</label>
+        </div>
+        <section
+          className="absolute top-6 left-1 flex space-x-0.5"
+        >
+          <img 
+            src='reset.svg' 
+            alt='reset' 
+            className='w-7 h-7 bg-gray-300 hover:bg-red-400  border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer' 
+            onClick={() => setTime(INITIAL_TIME)}
+          />
+          <img 
+            src='pos.svg' 
+            alt='position' 
+            className='w-7 h-7 bg-gray-300 hover:bg-cyan-400 border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer' 
+          />
+        </section>
+      </div>
+      <div
+        className={`bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow border-2 ${color} cursor-pointer`}
+        onClick={() => switchTimer()}
+      >
+        <div className="flex items-center justify-center">
+          <div
+            className={`text-4xl font-semibold w-[7ch] ${time == INITIAL_TIME ? "text-center" : null}`}>
+            {time == INITIAL_TIME ? "Iniciar" : timer()}
+          </div>
         </div>
       </div>
     </div>
