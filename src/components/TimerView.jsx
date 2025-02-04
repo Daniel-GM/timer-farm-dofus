@@ -1,98 +1,124 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react';
 
 const TimerView = () => {
-  const INITIAL_TIME = 6003
-  const [time, setTime] = useState(INITIAL_TIME)
-  const [isRunning, setIsRunning] = useState(false)
-  const [color, setColor] = useState('border-gray-500')
-  const [values, setValues] = useState([0, 0])
+  const INITIAL_TIME = 6003;
+  const [time, setTime] = useState(INITIAL_TIME);
+  const [isRunning, setIsRunning] = useState(false);
+  const [color, setColor] = useState('border-gray-500');
+  const [values, setValues] = useState([0, 0]);
+  const [targetTime, setTargetTime] = useState(null);
 
   const handleValueChange = (index, newValue) => {
-    setValues(prevValues => {
-      const newValues = [...prevValues]
-      newValues[index] = newValue
-      return newValues
-    })
-  }
+    setValues((prevValues) => {
+      const newValues = [...prevValues];
+      newValues[index] = newValue;
+      return newValues;
+    });
+  };
+
+  const handleReset = () => {
+    const newTarget = Date.now() + INITIAL_TIME * 10;
+    setTargetTime(newTarget);
+    setTime(INITIAL_TIME);
+    isRunning ? setIsRunning(true) : setIsRunning(false);
+  };
 
   useEffect(() => {
-    if (!isRunning) return setColor('border-gray-500')
-    const interval = setInterval(() => {
-      setTime((prevTime) => {
-        (prevTime <= 800) ? setColor('border-red-500') : setColor('border-green-500')
+    let intervalId;
 
-        if (prevTime <= 0) {
-          setTime(INITIAL_TIME)
+    if (isRunning) {
+      if (!targetTime) {
+        setTargetTime(Date.now() + time * 10);
+      }
+
+      intervalId = setInterval(() => {
+        const remaining = Math.ceil((targetTime - Date.now()) / 10);
+
+        if (remaining <= 0) {
+          const newTarget = Date.now() + INITIAL_TIME * 10;
+          setTargetTime(newTarget);
+          setTime(INITIAL_TIME);
+        } else {
+          setTime(remaining);
         }
-        return prevTime - 1
-      })
-    }, 10)
-    return () => clearInterval(interval)
-  }, [isRunning])
 
-  function switchTimer() {
-    setIsRunning(!isRunning)
-  }
+        if (remaining <= 800) {
+          setColor('border-red-500');
+        } else {
+          setColor('border-green-500');
+        }
+      }, 30);
+    } else {
+      if (time != INITIAL_TIME) {
+        setColor('border-yellow-500')
+      } else {
+        setColor('border-gray-500')
+      }
+    }
 
-  function timer() {
-    const minutes = String(Math.floor(time / 6000).toFixed(0).padStart(2, '0'))
-    const seconds = String(Math.floor((time % 6000) / 100).toFixed(0).padStart(2, '0'))
-    const milliseconds = String(time % 100).padStart(2, '0')
+    return () => clearInterval(intervalId);
+  }, [isRunning, targetTime]);
 
-    return `${minutes}:${seconds}:${milliseconds}`
-  }
+  const timer = () => {
+    const minutes = String(Math.floor(time / 6000)).padStart(2, '0');
+    const seconds = String(Math.floor((time % 6000) / 100)).padStart(2, '0');
+    const centiseconds = String(time % 100).padStart(2, '0');
+    return `${minutes}:${seconds}:${centiseconds}`;
+  };
 
   return (
     <div>
       <div className="text-center mb-3 relative">
-        <div className='relative'>
+        <div className="relative">
           {values.map((value, index) => (
             <span key={index}>
               <label
                 onClick={() => {
-                  const newValue = prompt('Digite um novo valor:', value)
+                  const newValue = prompt('Digite um novo valor:', value);
                   if (newValue !== null && !isNaN(parseFloat(newValue))) {
-                    handleValueChange(index, parseFloat(newValue))
+                    handleValueChange(index, parseFloat(newValue));
                   } else {
-                    alert('Valor inválido')
+                    alert('Valor inválido');
                   }
                 }}
               >
-                {value} 
+                {value}
               </label>
               {index < values.length - 1 && <label> , </label>}
             </span>
           ))}
         </div>
-        <section
-          className="absolute top-6 left-1 flex space-x-0.5"
-        >
+        <section className="absolute top-6 left-1 flex space-x-0.5">
           <img
-            src='reset.svg'
-            alt='reset'
-            className='w-7 h-7 bg-gray-300 hover:bg-red-400  border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer'
-            onClick={() => setTime(INITIAL_TIME)}
+            src="reset.svg"
+            alt="reset"
+            className={`w-7 h-7 bg-gray-300 hover:bg-red-400 border-2 ${color} px-1 py-1 rounded-4xl shadow cursor-pointer`}
+            onClick={handleReset}
           />
           <img
-            src='pos.svg'
-            alt='position'
-            className='w-7 h-7 bg-gray-300 hover:bg-cyan-400 border border-2 border-gray-500 px-1 py-1 rounded-4xl shadow cursor-pointer'
+            src="pos.svg"
+            alt="position"
+            className={`w-7 h-7 bg-gray-300 hover:bg-cyan-400 border-2 ${color} px-1 py-1 rounded-4xl shadow cursor-pointer`}
           />
         </section>
       </div>
       <div
         className={`bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow border-2 ${color} cursor-pointer`}
-        onClick={() => switchTimer()}
+        onClick={() => {
+          if (!isRunning) {
+            setTargetTime(Date.now() + time * 10);
+          }
+          setIsRunning(!isRunning);
+        }}
       >
         <div className="flex items-center justify-center">
-          <div
-            className={`text-4xl font-semibold w-[7ch] ${time == INITIAL_TIME ? "text-center" : null}`}>
-            {time == INITIAL_TIME ? "Iniciar" : timer()}
+          <div className={`text-4xl font-semibold w-[7ch] ${time === INITIAL_TIME ? 'text-center' : ''}`}>
+            {time === INITIAL_TIME ? 'Iniciar' : timer()}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TimerView
+export default TimerView;
